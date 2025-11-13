@@ -1,110 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { auth } from "../firebase/firebase.config";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 
-export default function Navbar() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u ? { name: u.displayName, email: u.email, photo: u.photoURL } : null);
-    });
-    return unsub;
-  }, []);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-  };
+export default function Navbar({ user, onLogout }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="navbar bg-gradient-to-r from-green-200 via-green-300 to-green-400 shadow-md px-6 py-3 sticky top-0 z-50">
-   
-      <div className="flex-1">
-        <Link to="/" className="flex items-center gap-2">
-          <img
-            src="/src/assets/logo.png"
-            alt="EcoTrack"
-            className="w-10 h-10 rounded-full shadow-sm"
-          />
+    <header className="bg-gradient-to-r from-green-200 via-green-300 to-green-400 px-6 py-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <img src="/src/assets/logo.png" alt="logo" className="w-10 h-10 rounded-full" />
           <span className="text-2xl font-extrabold text-green-800">EcoTrack</span>
         </Link>
-      </div>
 
-      <div className="flex-none">
-        <ul className="menu menu-horizontal px-1 text-green-900 font-medium">
-          <li>
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive ? "text-green-800 font-bold" : "hover:text-green-700"
-              }
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/challenges"
-              className={({ isActive }) =>
-                isActive ? "text-green-800 font-bold" : "hover:text-green-700"
-              }
-            >
-              Challenges
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/my-activities"
-              className={({ isActive }) =>
-                isActive ? "text-green-800 font-bold" : "hover:text-green-700"
-              }
-            >
-              My Activities
-            </NavLink>
-          </li>
-        </ul>
-      </div>
+        <nav className="hidden md:flex gap-6 items-center">
+          <NavLink to="/" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>Home</NavLink>
+          <NavLink to="/challenges" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>Challenges</NavLink>
+          <NavLink to="/my-activities" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>My Activities</NavLink>
+        </nav>
 
-      <div className="flex items-center gap-3 ml-4">
-        {user ? (
-          <>
-            <div className="flex items-center gap-2">
-              {user.photo && (
-                <img
-                  src={user.photo}
-                  alt="user"
-                  className="w-8 h-8 rounded-full border border-green-700 shadow-sm"
-                />
-              )}
-              <span className="text-green-900 font-medium">
-                {user.name || user.email}
-              </span>
+        <div className="hidden md:flex gap-3">
+          {!user ? (
+            <>
+              <Link to="/login" className="btn btn-sm bg-green-600 text-white">Login</Link>
+              <Link to="/register" className="btn btn-sm bg-green-500 text-white">Register</Link>
+            </>
+          ) : (
+            <div className="flex items-center gap-3">
+              <img src={user.photoURL || "/src/assets/avatar-placeholder.png"} alt="avatar" className="w-9 h-9 rounded-full" />
+              <div className="text-sm">
+                <div className="font-semibold">{user.displayName || user.email}</div>
+                <div className="flex gap-2">
+                  <Link to="/profile" className="text-xs hover:underline">Profile</Link>
+                  <button onClick={onLogout} className="text-xs hover:underline">Logout</button>
+                </div>
+              </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="btn btn-sm bg-red-500 hover:bg-red-600 text-white"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              className="btn btn-sm bg-green-600 hover:bg-green-700 text-white"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="btn btn-sm bg-green-500 hover:bg-green-600 text-white"
-            >
-              Register
-            </Link>
-          </>
-        )}
+          )}
+        </div>
+
+        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</button>
       </div>
-    </div>
+
+      {isMenuOpen && (
+        <div className="md:hidden px-4 pb-4">
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+          <Link to="/challenges" onClick={() => setIsMenuOpen(false)}>Challenges</Link>
+          <Link to="/my-activities" onClick={() => setIsMenuOpen(false)}>My Activities</Link>
+          <div className="mt-2">
+            {!user ? (
+              <>
+                <Link to="/login" className="btn btn-sm w-full mb-2">Login</Link>
+                <Link to="/register" className="btn btn-sm btn-primary w-full">Register</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/profile" className="block">Profile</Link>
+                <button onClick={onLogout} className="btn btn-sm w-full mt-2">Logout</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
   );
 }
