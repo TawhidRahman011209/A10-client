@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-base-100 text-base-content;
+}
+@plugin "daisyui";
+
+
+:root {
+  --green-bg-light: #d9f99d;
+  --green-bg-mid: #bbf7d0;
+  --green-bg-dark: #a7f3d0;
+}
+
+body {
+  background: linear-gradient(180deg, var(--green-bg-light), var(--green-bg-mid), var(--green-bg-dark));
+  color: #064e3b; 
+  font-family: "Poppins", sans-serif;
+}
