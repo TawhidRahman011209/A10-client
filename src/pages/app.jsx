@@ -1,35 +1,36 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import MainLayout from "./components/MainLayout";
-import Home from "./pages/Home";
-import Challenges from "./pages/Challenges";
-import ChallengeDetail from "./pages/ChallengeDetail";
-import AddChallenge from "./pages/AddChallenge";
-import MyActivities from "./pages/MyActivities";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import NotFound from "./pages/NotFound";
+import { Outlet, Link } from "react-router-dom";
+import "./App.css";
 import { ToastContainer } from "react-toastify";
-import ErrorBoundary from "./components/ErrorBoundary";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function App(){
+function App() {
   return (
-    <ErrorBoundary>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/challenges" element={<Challenges/>} />
-          <Route path="/challenges/:id" element={<ChallengeDetail/>} />
-          <Route path="/challenges/add" element={<AddChallenge/>} />
-          <Route path="/my-activities" element={<MyActivities/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/register" element={<Register/>} />
-          <Route path="/forgot-password" element={<ForgotPassword/>} />
-          <Route path="*" element={<NotFound/>} />
-        </Routes>
-      </MainLayout>
-      <ToastContainer position="top-right" />
-    </ErrorBoundary>
-  )
+    <div>
+    
+      <header className="p-4 bg-green-600 text-white flex justify-between items-center">
+        <h1 className="text-xl font-bold">🌱 EcoTrack</h1>
+        <nav className="space-x-4">
+          <Link to="/">Home</Link>
+          <Link to="/my-activities">My Activities</Link>
+          <Link to="/challenges/add">Add Challenge</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+      </header>
+
+      
+      <main className="p-6">
+        <Outlet />
+      </main>
+
+    
+      <footer className="p-4 text-center bg-gray-100 mt-8">
+        © {new Date().getFullYear()} EcoTrack — Sustainability Matters 🌎
+      </footer>
+
+      <ToastContainer position="top-center" autoClose={3000} />
+    </div>
+  );
 }
+
+export default App;
