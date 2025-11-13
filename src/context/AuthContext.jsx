@@ -1,50 +1,38 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut as firebaseSignOut } from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
-import { toast } from "react-toastify";
+import { auth } from "../firebase/firebase.config";  
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [initializing, setInitializing] = useState(true);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(
-        u
-          ? {
-              uid: u.uid,
-              email: u.email,
-              displayName: u.displayName,
-              photoURL: u.photoURL,
-            }
-          : null
-      );
-      setInitializing(false);
+      setUser(u ? { uid: u.uid, email: u.email, displayName: u.displayName, photoURL: u.photoURL } : null);
+      setLoadingAuth(false);
     });
     return unsub;
   }, []);
 
-  const signOut = async () => {
+  const logout = async () => {
     try {
       await firebaseSignOut(auth);
       toast.success("Logged out");
     } catch (err) {
-      toast.error("Failed to logout");
+      toast.error("Logout failed");
+      console.error(err);
     }
   };
 
-  const value = {
-    user,
-    initializing,
-    signOut,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={{ user, setUser, logout, loadingAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

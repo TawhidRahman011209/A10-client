@@ -1,28 +1,21 @@
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { auth } from "../firebase/firebase.config";
-import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "../context/AuthContext";
+import Spinner from "./spinner";
 
-const Spinner = () => (
-  <div className="flex items-center justify-center h-screen">
-    <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
-  </div>
-);
-
-export default function ProtectedRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+const ProtectedRoute = ({ children }) => {
+  const { user, loadingAuth } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-    return unsub;
-  }, []);
+  if (loadingAuth) return <Spinner />;
 
-  if (loading) return <Spinner />;
-  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) {
+    
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
   return children;
-}
+};
+
+export default ProtectedRoute;
