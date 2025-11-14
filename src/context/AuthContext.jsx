@@ -13,12 +13,23 @@ export const AuthProvider = ({ children }) => {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u ? { uid: u.uid, email: u.email, displayName: u.displayName, photoURL: u.photoURL } : null);
-      setLoadingAuth(false);
-    });
-    return unsub;
-  }, []);
+  const unsub = onAuthStateChanged(auth, (u) => {
+    if (u) {
+      setUser({
+        uid: u.uid,
+        email: u.email,
+        displayName: u.displayName || "",
+        photoURL: u.photoURL || "",
+      });
+    } else {
+      setUser(null);
+    }
+
+    setLoadingAuth(false);
+  });
+
+  return unsub;
+}, []);
 
   const logout = async () => {
     try {

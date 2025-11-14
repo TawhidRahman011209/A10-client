@@ -1,4 +1,3 @@
-
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import Home from "../pages/home";
@@ -12,6 +11,7 @@ import Register from "../pages/register";
 import ForgotPassword from "../pages/forget_password"; 
 import NotFound from "../pages/not_found";
 import ProtectedRoute from "../components/protected_route";
+import Profile from "../pages/profile";   // ⬅ ADD THIS
 
 const router = createBrowserRouter([
   {
@@ -21,6 +21,7 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/challenges", element: <Challenges /> },
       { path: "/challenges/:id", element: <ChallengeDetails /> },
+      
       {
         path: "/challenges/add",
         element: (
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
       {
         path: "/challenges/join/:id",
         element: (
@@ -37,6 +39,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
       {
         path: "/my-activities",
         element: (
@@ -45,9 +48,20 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+      // ✅ PROFILE PAGE -- FIXED!
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
+
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
-      { path: "/forgot-password", element: <ForgotPassword /> }, 
+      { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "*", element: <NotFound /> },
     ],
   },

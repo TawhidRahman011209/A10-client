@@ -8,6 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const emailRef = useRef(null);
@@ -20,6 +21,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Logged in successfully!");
@@ -33,9 +35,21 @@ export default function Login() {
 
   const handleGoogle = async () => {
     setLoading(true);
+
     try {
-      await signInWithPopup(auth, googleProvider);
-      toast.success("Signed in with Google");
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // CHECK IF USER IN DATABASE
+      const res = await fetch(`http://localhost:5000/api/users/check/${user.email}`);
+      const data = await res.json();
+
+      if (!data.exists) {
+        await auth.signOut();
+        return toast.error("This Google account is not registered!");
+      }
+
+      toast.success("Logged in with Google");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.message);
@@ -58,7 +72,7 @@ export default function Login() {
               type="email"
               placeholder="Enter your email"
               ref={emailRef}
-              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 text-gray-700"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -70,7 +84,7 @@ export default function Login() {
             <input
               type="password"
               placeholder="Enter your password"
-              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 text-gray-700"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -80,7 +94,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-all duration-200"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
@@ -89,7 +103,7 @@ export default function Login() {
         <button
           onClick={handleGoogle}
           disabled={loading}
-          className="w-full bg-white border border-green-400 text-green-700 mt-4 py-2 rounded-lg hover:bg-green-100 transition-all duration-200"
+          className="w-full bg-white border border-green-400 text-green-700 mt-4 py-2 rounded-lg hover:bg-green-100"
         >
           {loading ? "Loading..." : "Continue with Google"}
         </button>
