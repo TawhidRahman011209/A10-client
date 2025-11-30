@@ -14,6 +14,7 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
   const emailRef = useRef(null);
+
   const from = location.state?.from?.pathname || "/";
 
   useEffect(() => {
@@ -37,20 +38,9 @@ export default function Login() {
 
   const handleGoogle = async () => {
     setLoading(true);
-
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      const res = await fetch(`http://localhost:5000/api/users/check/${user.email}`);
-      const data = await res.json();
-
-      if (!data.exists) {
-        await auth.signOut();
-        return toast.error("This Google account is not registered!");
-      }
-
-      toast.success("Logged in with Google");
+      await signInWithPopup(auth, googleProvider);
+      toast.success("Logged in with Google!");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.message);
@@ -67,7 +57,6 @@ export default function Login() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           <div>
             <label className="block text-green-800 font-medium mb-1">Email</label>
             <input

@@ -10,19 +10,49 @@ export default function Navbar() {
   return (
     <header className="bg-gradient-to-r from-green-200 via-green-300 to-green-400 px-6 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-    
+
         <Link to="/" className="flex items-center gap-3">
           <img src="/src/assets/logo.png" alt="logo" className="w-10 h-10 rounded-full" />
           <span className="text-2xl font-extrabold text-green-800">EcoTrack</span>
         </Link>
-     
+
         <nav className="hidden md:flex gap-6 items-center">
-          <NavLink to="/" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>Home</NavLink>
-          <NavLink to="/challenges" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>Challenges</NavLink>
-          <NavLink to="/my-activities" className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}>My Activities</NavLink>
+          <NavLink 
+            to="/" 
+            className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}
+          >
+            Home
+          </NavLink>
+
+          <NavLink 
+            to="/challenges" 
+            className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}
+          >
+            Challenges
+          </NavLink>
+
+          <NavLink 
+            to="/tips" 
+            className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}
+          >
+            Tips
+          </NavLink>
+
+          <NavLink 
+            to="/events" 
+            className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}
+          >
+            Events
+          </NavLink>
+
+          <NavLink 
+            to="/my-activities" 
+            className={({isActive}) => isActive ? "font-bold text-green-800" : "hover:text-green-700"}
+          >
+            My Activities
+          </NavLink>
         </nav>
 
-       
         <div className="hidden md:flex items-center gap-3 relative">
           {!user ? (
             <>
@@ -41,7 +71,9 @@ export default function Navbar() {
                   referrerPolicy="no-referrer"
                   className="w-9 h-9 rounded-full object-cover"
                 />
-                <span className="font-semibold">{user.displayName || user.email}</span>
+                <span className="font-semibold">
+                  {user.displayName || user.email}
+                </span>
               </button>
 
               {openDropdown && (
@@ -65,25 +97,55 @@ export default function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</button>
+        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          ☰
+        </button>
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden px-4 pb-4">
+        <div className="md:hidden px-4 pb-4 space-y-2">
+
           <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
           <Link to="/challenges" onClick={() => setIsMenuOpen(false)}>Challenges</Link>
+
+          <Link to="/tips" onClick={() => setIsMenuOpen(false)}>Tips</Link>
+
+          <Link to="/events" onClick={() => setIsMenuOpen(false)}>Events</Link>
+
           <Link to="/my-activities" onClick={() => setIsMenuOpen(false)}>My Activities</Link>
 
           <div className="mt-2">
             {!user ? (
               <>
-                <Link to="/login" className="block bg-green-600 text-white py-1 text-center rounded mt-2">Login</Link>
-                <Link to="/register" className="block bg-green-500 text-white py-1 text-center rounded mt-2">Register</Link>
+                <Link 
+                  to="/login" 
+                  className="block bg-green-600 text-white py-1 text-center rounded mt-2"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="block bg-green-500 text-white py-1 text-center rounded mt-2"
+                >
+                  Register
+                </Link>
               </>
             ) : (
               <>
-                <Link to="/profile" className="block py-2" onClick={() => setIsMenuOpen(false)}>Profile</Link>
-                <button className="block w-full mt-2 bg-red-500 text-white py-1 rounded" onClick={logout}>Logout</button>
+                <Link 
+                  to="/profile" 
+                  className="block py-2" 
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+
+                <button 
+                  className="block w-full mt-2 bg-red-500 text-white py-1 rounded"
+                  onClick={logout}
+                >
+                  Logout
+                </button>
               </>
             )}
           </div>

@@ -11,64 +11,73 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [chRes, tipsRes, evRes] = await Promise.all([
-          API.get("/api/challenges"),
-          API.get("/api/tips"),
-          API.get("/api/events"),
-        ]);
+  async function load() {
+    try {
+     
+      const [chRes, tipsRes, evRes] = await Promise.all([
+        API.getChallenges(),
+        API.getTips(),
+        API.getEvents(),
+      ]);
 
-        setChallenges(chRes.data.slice(0, 6));
-        setTips(tipsRes.data.slice(0, 5));
-        setEvents(evRes.data.slice(0, 4));
+      setChallenges(chRes.slice(0, 6));
+      setTips(tipsRes.slice(0, 5));
+      setEvents(evRes.slice(0, 4));
 
-        const totalParticipants = chRes.data.reduce(
-          (sum, c) => sum + (c.participants || 0),
-          0
-        );
+      const totalParticipants = chRes.reduce(
+        (sum, c) => sum + (c.participants || 0),
+        0
+      );
 
-        setStats({
-          totalParticipants,
-          totalCO2SavedKg: Math.round(totalParticipants * 1.5),
-          totalPlasticSavedKg: Math.round(totalParticipants * 0.5),
-        });
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load home data");
-      } finally {
-        setLoading(false);
-      }
+      setStats({
+        totalParticipants,
+        totalCO2SavedKg: Math.round(totalParticipants * 1.5),
+        totalPlasticSavedKg: Math.round(totalParticipants * 0.5),
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load home data");
+    } finally {
+      setLoading(false);
     }
+  }
 
-    load();
-  }, []);
+  load();
+}, []);
+
 
   return (
     <div
       className="min-h-screen flex flex-col gap-16 px-6 py-10"
       style={{
-        background: "linear-gradient(180deg, #d9f99d 0%, #bbf7d0 50%, #a7f3d0 100%)",
+        background:
+          "linear-gradient(180deg, #d9f99d 0%, #bbf7d0 50%, #a7f3d0 100%)",
       }}
     >
-      
+
       <section className="hero min-h-[60vh] bg-green-100 rounded-2xl shadow-xl flex flex-col justify-center items-center text-center px-6 border border-green-200">
         <h1 className="text-4xl md:text-5xl font-bold text-green-800 mb-3 drop-shadow-md">
           Join the Sustainability Movement 🌱
         </h1>
         <p className="text-lg text-green-700 max-w-2xl">
-          Small actions. Big change. Take part in challenges and help make our planet greener.
+          Small actions. Big change. Take part in challenges and help make our
+          planet greener.
         </p>
         <div className="mt-6">
-          <a href="/challenges" className="btn bg-green-600 hover:bg-green-700 text-white text-lg">
+          <a
+            href="/challenges"
+            className="btn bg-green-600 hover:bg-green-700 text-white text-lg"
+          >
             Explore Challenges
           </a>
         </div>
       </section>
 
-      
       <section>
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">Live Impact Stats 🌍</h2>
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">
+          Live Impact Stats 🌍
+        </h2>
+
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
@@ -83,12 +92,16 @@ export default function Home() {
                 {stats?.totalParticipants || 0}
               </div>
             </div>
+
             <div className="stat">
-              <div className="stat-title text-green-700">Total CO₂ Saved (kg)</div>
+              <div className="stat-title text-green-700">
+                Total CO₂ Saved (kg)
+              </div>
               <div className="stat-value text-green-800">
                 {stats?.totalCO2SavedKg || 0}
               </div>
             </div>
+
             <div className="stat">
               <div className="stat-title text-green-700">Plastic Saved (kg)</div>
               <div className="stat-value text-green-800">
@@ -100,7 +113,9 @@ export default function Home() {
       </section>
 
       <section>
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">Active Challenges ⚡</h2>
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">
+          Active Challenges ⚡
+        </h2>
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4].map((i) => (
@@ -130,7 +145,10 @@ export default function Home() {
                     {c.description?.slice(0, 80)}...
                   </p>
                   <div className="card-actions justify-end">
-                    <a href={`/challenges/${c._id}`} className="btn btn-sm bg-green-600 text-white">
+                    <a
+                      href={`/challenges/${c._id}`}
+                      className="btn btn-sm bg-green-600 text-white"
+                    >
                       View
                     </a>
                   </div>
@@ -141,9 +159,11 @@ export default function Home() {
         )}
       </section>
 
-      
       <section>
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">Recent Eco Tips 💡</h2>
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">
+          Recent Eco Tips 💡
+        </h2>
+
         {loading ? (
           <div className="skeleton h-24 w-full"></div>
         ) : (
@@ -163,9 +183,11 @@ export default function Home() {
         )}
       </section>
 
-      
       <section>
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">Upcoming Events 📅</h2>
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-6">
+          Upcoming Events 📅
+        </h2>
+
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
@@ -194,9 +216,10 @@ export default function Home() {
         )}
       </section>
 
-      
       <section className="bg-green-100 border border-green-200 p-6 rounded-2xl shadow-inner">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">Why Go Green?</h2>
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-4">
+          Why Go Green?
+        </h2>
         <ul className="list-disc list-inside space-y-1 text-green-700">
           <li>Save money and resources</li>
           <li>Healthier communities with cleaner air</li>

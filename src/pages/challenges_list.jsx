@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getChallenges } from "../api";
 import { toast } from "react-hot-toast";
 import SkeletonCard from "../components/skeleton_cards";
+import { Link } from "react-router-dom";
 
 export default function ChallengesList() {
   const [list, setList] = useState([]);
@@ -10,11 +11,9 @@ export default function ChallengesList() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await getChallenges(); 
-        console.log("Fetched challenges:", res); 
+        const res = await getChallenges();
         setList(res);
       } catch (err) {
-        console.error("Error fetching challenges:", err);
         toast.error("Failed to load challenges");
       } finally {
         setLoading(false);
@@ -61,13 +60,14 @@ export default function ChallengesList() {
                 <p className="text-green-700 text-sm mb-4">
                   {c.description?.slice(0, 100)}...
                 </p>
+
                 <div className="text-right">
-                  <a
-                    href={`/challenges/${c._id}`}
+                  <Link
+                    to={`/challenges/${c._id}`}
                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm transition"
                   >
                     View
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
