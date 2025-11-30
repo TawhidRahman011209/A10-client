@@ -11,7 +11,7 @@ import Register from "../pages/register";
 import ForgotPassword from "../pages/forget_password"; 
 import NotFound from "../pages/not_found";
 import ProtectedRoute from "../components/protected_route";
-import Profile from "../pages/profile";   // ⬅ ADD THIS
+import Profile from "../pages/profile";
 
 const router = createBrowserRouter([
   {
@@ -49,14 +49,12 @@ const router = createBrowserRouter([
         ),
       },
 
-      // ✅ PROFILE PAGE -- FIXED!
-      {
-        path: "/profile",
-        element: (
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        ),
+     { 
+      path: "/profile", 
+      element: 
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute> 
       },
 
       { path: "/login", element: <Login /> },

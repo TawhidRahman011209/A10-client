@@ -3,10 +3,12 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase/firebase.config";
 import { toast } from "react-hot-toast";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const location = useLocation();
@@ -40,7 +42,6 @@ export default function Login() {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      // CHECK IF USER IN DATABASE
       const res = await fetch(`http://localhost:5000/api/users/check/${user.email}`);
       const data = await res.json();
 
@@ -66,13 +67,14 @@ export default function Login() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
           <div>
             <label className="block text-green-800 font-medium mb-1">Email</label>
             <input
               type="email"
               placeholder="Enter your email"
               ref={emailRef}
-              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 text-gray-700"
+              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -81,14 +83,25 @@ export default function Login() {
 
           <div>
             <label className="block text-green-800 font-medium mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 text-gray-700"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="w-full border border-green-300 bg-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none text-gray-700"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-green-700"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           <button

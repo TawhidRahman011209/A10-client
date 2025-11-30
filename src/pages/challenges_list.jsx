@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getChallenges } from "../api"; // ✅ Correct import
+import { getChallenges } from "../api";
 import { toast } from "react-hot-toast";
 import SkeletonCard from "../components/skeleton_cards";
 

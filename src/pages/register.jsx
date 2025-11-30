@@ -49,52 +49,57 @@ export default function Register() {
     });
   };
 
-  const submit = async (e) => {
-    e.preventDefault();
+const submit = async (e) => {
+  e.preventDefault();
 
-    if (!validation.valid) {
-      return toast.error(
-        "Password must have uppercase, lowercase, special character and at least 6 characters."
-      );
-    }
+  if (!validation.valid) {
+    return toast.error(
+      "Password must have uppercase, lowercase, special character and at least 6 characters."
+    );
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-      await updateProfile(cred.user, { displayName: name, photoURL });
+    await updateProfile(cred.user, { displayName: name, photoURL });
 
-      // Save to backend
-      await saveUserToDB(name, email, photoURL);
+    await saveUserToDB(name, email, photoURL);
 
-      toast.success("Registered successfully!");
-      navigate("/");
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success("Welcome, " + name); 
+
+    navigate("/");
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const google = async () => {
-    setLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
+  setLoading(true);
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
 
-      const user = result.user;
+    const check = await fetch(`http://localhost:5000/api/users/check/${user.email}`);
+    const checkData = await check.json();
 
-      // Save to backend (Google register)
+    if (!checkData.exists) {
       await saveUserToDB(user.displayName, user.email, user.photoURL);
-
-      toast.success("Signed in with Google");
-      navigate("/");
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    toast.success("Signed in with Google");
+    navigate("/");
+  } catch (err) {
+    toast.error(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-100 to-green-300 px-4">

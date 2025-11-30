@@ -3,13 +3,16 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/routes";
 import "./index.css";
-import "react-toastify/dist/ReactToastify.css";
-import { AuthProvider } from "./context/AuthContext";   // ⭐ IMPORT AUTH PROVIDER
+
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>                                       {/* ⭐ WRAP APP HERE */}
+    <AuthProvider>
       <RouterProvider router={router} />
+      
+      <Toaster position="top-center" reverseOrder={false} />
     </AuthProvider>
   </React.StrictMode>
 );
