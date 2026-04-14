@@ -1,27 +1,37 @@
-
 import { auth } from "./firebase/firebase.config";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+const API_BASE =
+  import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
+// 🔐 Get Firebase token
 async function getToken() {
   const user = auth.currentUser;
   if (!user) return null;
   return await user.getIdToken();
 }
 
+// 🌐 Core request handler
 async function request(path, options = {}) {
   const url = `${API_BASE}${path}`;
 
-  options.headers = options.headers || {};
-  options.headers["Content-Type"] = "application/json";
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
 
   const token = await getToken();
-  if (token) options.headers["Authorization"] = `Bearer ${token}`;
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
-  const res = await fetch(url, options);
+  const res = await fetch(url, {
+    ...options,
+    headers,
+  });
 
   let data;
   const text = await res.text();
+
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
@@ -38,41 +48,65 @@ async function request(path, options = {}) {
   return data;
 }
 
-export const getChallenges = (params = {}) => {
-  const qs = new URLSearchParams(params).toString();
-  return request(`/challenges${qs ? "?" + qs : ""}`);
-};
+//
+// ✅ GENERIC METHODS (optional but useful)
+//
+export const apiGet = (path) => request(path);
 
-export const getChallenge = (id) => request(`/challenges/${id}`);
-
-export const addChallenge = (data) =>
-  request(`/challenges`, {
+export const apiPost = (path, body) =>
+  request(path, {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
 
-export const joinChallenge = (id) =>
-  request(`/challenges/join/${id}`, {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
-
-export const getUserChallenges = (userId) =>
-  request(`/user-challenges?userId=${userId}`);
-
-export const updateUserChallenge = (id, body) =>
-  request(`/user-challenges/${id}`, {
+export const apiPatch = (path, body) =>
+  request(path, {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 
+export const apiDelete = (path) =>
+  request(path, {
+    method: "DELETE",
+  });
+
+//
+// ✅ FEATURE APIs (🔥 USE THESE IN COMPONENTS)
+//
+
+// Challenges
+export const getChallenges = (params = {}) => {
+  const qs = new URLSearchParams(params).toString();
+  return request(`/challenges${qs ? `?${qs}` : ""}`);
+};
+
+export const getChallenge = (id) =>
+  request(`/challenges/${id}`);
+
+export const addChallenge = (data) =>
+  apiPost(`/challenges`, data);
+
+export const joinChallenge = (id) =>
+  apiPost(`/challenges/join/${id}`, {});
+
+// User Challenges
+export const getUserChallenges = (userId) =>
+  request(`/user-challenges?userId=${userId}`);
+
+export const updateUserChallenge = (id, body) =>
+  apiPatch(`/user-challenges/${id}`, body);
+
+// Tips
 export const getTips = (limit) =>
   request(`/tips${limit ? `?limit=${limit}` : ""}`);
 
+// Events
 export const getEvents = (limit) =>
   request(`/events${limit ? `?limit=${limit}` : ""}`);
 
-
+//
+// ✅ DEFAULT EXPORT (optional)
+//
 export default {
   getChallenges,
   getChallenge,

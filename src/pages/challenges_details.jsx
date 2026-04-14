@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import API from "../api";
 import { toast } from "react-toastify";
 import { auth } from "../firebase/firebase.config";
-import { onAuthStateChanged, getIdToken } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function ChallengeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -19,8 +20,8 @@ export default function ChallengeDetails() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await API.get(`/api/challenges/${id}`); 
-        setChallenge(res.data); 
+        const res = await API.get(`/api/challenges/${id}`);
+        setChallenge(res.data);
       } catch (err) {
         toast.error("Failed to load challenge");
       } finally {
@@ -37,10 +38,17 @@ export default function ChallengeDetails() {
     }
 
     try {
-      const token = await getIdToken(user, true);
+      const token = await user.getIdToken(); // ✅ correct way
 
-      await API.post(`/challenges/join/${id}`);
-
+      await API.post(
+        `/api/challenges/join/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       toast.success("You joined the challenge");
     } catch (err) {
