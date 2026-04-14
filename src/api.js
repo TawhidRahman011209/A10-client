@@ -3,11 +3,29 @@ import { auth } from "./firebase/firebase.config";
 const API_BASE =
   import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
-// 🔐 Get Firebase token
+// 🔐 Wait for Firebase auth to be ready
+function waitForAuth() {
+  return new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+}
+
+// 🔐 Get Firebase token (fixed)
 async function getToken() {
-  const user = auth.currentUser;
+  let user = auth.currentUser;
+
+  // ⏳ wait if not ready
+  if (!user) {
+    user = await waitForAuth();
+  }
+
   if (!user) return null;
-  return await user.getIdToken();
+
+  // 🔥 force refresh token (important)
+  return await user.getIdToken(true);
 }
 
 // 🌐 Core request handler
@@ -20,6 +38,7 @@ async function request(path, options = {}) {
   };
 
   const token = await getToken();
+
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -49,7 +68,7 @@ async function request(path, options = {}) {
 }
 
 //
-// ✅ GENERIC METHODS (optional but useful)
+// ✅ GENERIC METHODS
 //
 export const apiGet = (path) => request(path);
 
@@ -71,7 +90,7 @@ export const apiDelete = (path) =>
   });
 
 //
-// ✅ FEATURE APIs (🔥 USE THESE IN COMPONENTS)
+// ✅ FEATURE APIs
 //
 
 // Challenges
@@ -104,9 +123,6 @@ export const getTips = (limit) =>
 export const getEvents = (limit) =>
   request(`/events${limit ? `?limit=${limit}` : ""}`);
 
-//
-// ✅ DEFAULT EXPORT (optional)
-//
 export default {
   getChallenges,
   getChallenge,

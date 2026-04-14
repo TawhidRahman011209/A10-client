@@ -1,7 +1,7 @@
-
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
+// ✅ Make sure these env values are from SAME Firebase project as backend
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -12,11 +12,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// ✅ Always get FRESH token (prevents "expired token" error)
 export async function getIdToken() {
   const user = auth.currentUser;
   if (!user) return null;
-  return user.getIdToken();
+
+  return await user.getIdToken(true); // 🔥 force refresh
 }

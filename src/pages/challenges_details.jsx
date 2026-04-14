@@ -13,16 +13,22 @@ export default function ChallengeDetails() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  // 🔐 Track logged-in user
   useEffect(() => {
     return onAuthStateChanged(auth, (u) => setUser(u));
   }, []);
 
+  // 📦 Load challenge details (FIXED)
   useEffect(() => {
     (async () => {
       try {
-        const res = await API.get(`/api/challenges/${id}`);
-        setChallenge(res.data);
+        // ✅ Use feature API (correct)
+        const res = await API.getChallenge(id);
+
+        // ✅ API already returns data directly
+        setChallenge(res);
       } catch (err) {
+        console.error(err);
         toast.error("Failed to load challenge");
       } finally {
         setLoading(false);
@@ -30,6 +36,7 @@ export default function ChallengeDetails() {
     })();
   }, [id]);
 
+  // 🚀 Join challenge (FIXED)
   const handleJoin = async () => {
     if (!user) {
       toast.info("Please login to join");
@@ -38,27 +45,23 @@ export default function ChallengeDetails() {
     }
 
     try {
-      const token = await user.getIdToken(); // ✅ correct way
+      // ✅ Use feature API
+      await API.joinChallenge(id);
 
-      await API.post(
-        `/api/challenges/join/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      toast.success("You joined the challenge");
+      toast.success("You joined the challenge 🎉");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to join");
+      console.error(err);
+      toast.error(err?.body?.message || "Failed to join");
     }
   };
 
+  // ⏳ Loading state
   if (loading) return <div>Loading...</div>;
+
+  // ❌ Not found state
   if (!challenge) return <div>Not found</div>;
 
+  // ✅ UI
   return (
     <div style={{ padding: 20 }}>
       <h2>{challenge.title}</h2>
@@ -82,7 +85,10 @@ export default function ChallengeDetails() {
       <p>{challenge.description}</p>
 
       <div style={{ marginTop: 12 }}>
-        <button onClick={handleJoin} className="btn bg-green-600 text-white">
+        <button
+          onClick={handleJoin}
+          className="btn bg-green-600 text-white"
+        >
           Join Challenge
         </button>
       </div>
