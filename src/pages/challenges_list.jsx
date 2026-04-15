@@ -24,9 +24,21 @@ export default function ChallengesList() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-100 to-green-300 p-8">
-      <h2 className="text-3xl font-bold text-green-800 mb-8 text-center">
-        All Challenges
-      </h2>
+      
+      {/* 🔥 Title + Add Button */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-green-800">
+          All Challenges
+        </h2>
+
+        {/* ✅ Add Challenge Button */}
+        <Link
+          to="/challenges/add"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition"
+        >
+          + Add Challenge
+        </Link>
+      </div>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -50,13 +62,16 @@ export default function ChallengesList() {
                 alt={c.title}
                 className="h-48 w-full object-cover"
               />
+
               <div className="p-5">
                 <h3 className="text-lg font-semibold text-green-800 mb-1">
                   {c.title}
                 </h3>
+
                 <p className="text-sm text-green-700 mb-2">
                   {c.category} • {c.duration} days
                 </p>
+
                 <p className="text-green-700 text-sm mb-4">
                   {c.description?.slice(0, 100)}...
                 </p>
