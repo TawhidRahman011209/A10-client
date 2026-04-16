@@ -1,7 +1,7 @@
 import { auth } from "./firebase/firebase.config";
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+  import.meta.env.VITE_API_BASE || "https://a10-server-drab.vercel.app/api";
 
 // 🔐 Wait for Firebase auth to be ready
 function waitForAuth() {

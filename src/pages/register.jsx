@@ -42,7 +42,7 @@ export default function Register() {
   }, []);
 
   const saveUserToDB = async (name, email, photoURL) => {
-    await fetch("http://localhost:5000/api/users/register", {
+    await fetch("https://a10-server-drab.vercel.app/api/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, photoURL }),
@@ -84,7 +84,7 @@ const submit = async (e) => {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
-    const check = await fetch(`http://localhost:5000/api/users/check/${user.email}`);
+    const check = await fetch(`https://a10-server-drab.vercel.app/api/users/check/${user.email}`);
     const checkData = await check.json();
 
     if (!checkData.exists) {
